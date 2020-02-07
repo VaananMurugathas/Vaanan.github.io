@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-database.js"></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<title>CSS Template</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.select {
+  background-color: #324ea8;
+  border: none;
+  color: white;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 20px;
+}
+.button {
+  background-color: #324ea8;
+  border: none;
+  color: white;
+  padding: 30px 45px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 20px;
+}
+.button2 {
+  background-color: #a83232;
+  border: none;
+  color: white;
+  padding: 30px 45px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #4542f5;
+}
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-image: url('Slide1.jpeg');
+}
+
+/* Style the header */
+header {
+  background-color: #3285a8;
+  padding: 10px;
+  text-align: center;
+  font-size: 15px;
+  color: white;
+}
+
+/* Create two columns/boxes that floats next to each other */
+nav {
+  float: left;
+  width: 100%;
+  height: 500px; /* only for demonstration, should be removed */
+  background: #3285a8;
+}
+
+/* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
+@media (max-width: 600px) {
+  nav {
+    width: 100%;
+    height: auto;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h2>Store symptoms</h2>
+  <h1 id="uid"></h1>
+</header>
+
+<section>
+  <nav>
+<!--     <center><button class="button">For additional information <br>about this test click here</button></center> -->
+    <p style="border:3px; border-style:solid; border-color:#000000; padding: 1em;" id="box">Please select a test for further instructions</p>
+    <center><p>Please enter the date</p></center> 
+    <center><input type="date" id="date"></input></center>
+    <center><p>Please enter test results below</p></center>
+    <center><input type="text" id="text" value = "Test results"></center>
+
+    <center><button class="button" onclick="sendresults()">Send results</button></center>
+    <p id="test"></p>
+  </nav>
+
+</body>
+  <script type="text/javascript">
+var provider = new firebase.auth.GoogleAuthProvider();
+var userId = document.getElementById("uid").innerHTML;
+
+  // Your web app's Firebase configuration that we copy-and-paste from 
+  // the Firebase setup
+  var config = {
+
+    apiKey: "AIzaSyDjE-sz5wbwyQYLgiNb4zrEzlXoFokfB_8",
+    authDomain: "kimothy5.firebaseapp.com",
+    databaseURL: "https://kimothy5.firebaseio.com",
+    projectId: "kimothy5",
+    storageBucket: "kimothy5.appspot.com",
+    messagingSenderId: "1001806703876",
+    appId: "1:1001806703876:web:a9f507acc288807b6cb451",
+    measurementId: "G-EM2JTCGZH1"
+
+  };
+  firebase.initializeApp(config);
+
+  const selectElement = document.querySelector('.select');
+
+  selectElement.addEventListener('change', (event) => {
+    if (selectElement.value == "Blood sugar") {
+      document.getElementById("box").innerHTML = "To conduct this test please do the following: <br>1. Wash and dry your hands <br>2. Insert a test strip in your meter. <br>3. Prick the side of your fingertip with the needle (lancet) provided with your test kit.<br>4. Gently squeeze or massage your finger until a drop of blood forms.<br>5. Touch and hold the edge of the test strip to the drop of blood."
+
+    }
+    else if (selectElement.value == "Cholestrol") {
+      document.getElementById("box").innerHTML = "To conduct this test please do the following: <br>1. Wash and dry your hands <br>2. Insert a test strip in your meter. <br>3. Prick the side of your fingertip with the needle (lancet) provided with your test kit.<br>4. Gently squeeze or massage your finger until a drop of blood forms.<br>5. Touch and hold the edge of the test strip to the drop of blood."
+
+    }
+    else if (selectElement.value == "Blood pressure") {
+      document.getElementById("box").innerHTML = "Third test"
+    }
+    else {
+      document.getElementById("box").innerHTML = "fourth test"
+    }
+  
+  });
+  function sendresults() {
+
+    // Create a database object that we can refer to
+    var database = firebase.database();
+
+    // Create a reference to a particular location or "node" called StudentInfo
+    var ref = database.ref('Medical');
+
+    // Grab the Name, Subject, and Grade obtained from the HTML frontend textboxes
+    var results = document.getElementById("text").value;
+    var test = document.querySelector('.select').value;
+    var date = document.getElementById("date").value;
+    // var date = 
+
+    // Create a JSON object to add to the database with user-inputted data
+    var data = {
+      result: results,
+      type: test,
+      date: date
+    }
+    // "PUSH" means we add something to the database
+    console.log(data)
+    ref.push(data);
+    // window.location.href = "screen3.html";
+  }
+</script>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- HERE ARE YOUR FIREBASE and GOOGLE AUTHENICATION IMPORTS -->
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-database.js"></script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+  <!-- Add SDKs for Firebase products that you want to use 
+    https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<title>CSS Template</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+.button .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  opacity: 0.5;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+/* Enables tool tip and makes it so  */
+.button:hover .tooltiptext {
+  visibility: visible;
+}
+/* Style the button */
+.button {
+  background-color: #324ea8;
+  border: none;
+  color: white;
+  padding: 30px 45px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+}
+/* Makes it so everytime the button is hovered over it changes color*/
+.button:hover {
+  background-color: #4542f5;
+}
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-image: url('Slide1.jpeg');
+
+}
+
+table, th, td {
+  border: 3px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 5px;
+}
+th {
+  text-align: left;
+}
+
+header {
+  background-color: #3285a8;
+  padding: 10px;
+  text-align: center;
+  font-size: 15px;
+  color: white;
+}
+
+/* Create two columns/boxes that floats next to each other */
+nav {
+  float: left;
+  width: 100%;
+  height: 500px; /* only for demonstration, should be removed */
+  background: #3285a8;
+}
+
+/* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
+@media (max-width: 600px) {
+  nav {
+    width: 100%;
+    height: auto;
+  }
+}
+</style>
+
+
+</head>
+<body onload ="gotData();">
+<header>
+  <h2>View prescriptions</h2>
+</header>
+<nav>
+  <table style="width:100%">
+    <tr>
+      <th>Firstname</th>
+      <th>Lastname</th> 
+      <th>Age</th>
+    </tr>
+  </table>
+</nav>
+</body>
+
+<script>
+// Variables created here to be used throughout the program
+
+var provider = new firebase.auth.GoogleAuthProvider();
+var userId = document.getElementById("uid").innerHTML;
+
+// Your web app's Firebase configuration that we copy-and-paste from 
+// the Firebase setup
+var config = {
+
+  apiKey: "AIzaSyDjE-sz5wbwyQYLgiNb4zrEzlXoFokfB_8",
+  authDomain: "kimothy5.firebaseapp.com",
+  databaseURL: "https://kimothy5.firebaseio.com",
+  projectId: "kimothy5",
+  storageBucket: "kimothy5.appspot.com",
+  messagingSenderId: "1001806703876",
+  appId: "1:1001806703876:web:a9f507acc288807b6cb451",
+  measurementId: "G-EM2JTCGZH1"
+
+};
+
+firebase.initializeApp(config);
+//firebase.analytics();
+
+
+function gotData(data){
+
+    // clear items from previously created lists
+    document.getElementById("studentList").innerHTML = "";
+    document.getElementById("subjectList").innerHTML = "";
+    document.getElementById("markList").innerHTML = "";
+    
+    // collect all of the unique objects ('keys' or id's) out of the database
+    var studentData = data.val(); // access the data 'value' of each student 'object' 
+    var keys = Object.keys(studentData);
+    console.log(keys);
+
+    // iterate through the unique object id's and grab data fields: 'name', 'subject', 'mark'
+    for (var i = 0; i < keys.length; i++){
+      var k = keys[i];
+      var name = studentData[k].name;
+      var subject = studentData[k].subject;
+      var mark = studentData[k].mark;
+
+      // DISPLAY STUDENT NAMES
+      // Create a reference to the ordered list called 'studentList'
+      // called 'oListStudent'
+      var oListStudent = document.getElementById('studentList');
+      var entry = document.createElement('li'); // a list element to be added to the ordered list
+      entry.appendChild(document.createTextNode(name));
+      oListStudent.appendChild(entry);
+
+      // DISPLAY STUDENT SUBJECTS
+      // Create a reference to the ordered list called 'studentList'
+      // called 'oListStudent'
+      var oListSubject = document.getElementById('subjectList');
+      var entry = document.createElement('li'); // a list element to be added to the ordered list
+      entry.appendChild(document.createTextNode(subject));
+      oListSubject.appendChild(entry);
+
+      // DISPLAY STUDENT MARKS
+      // Create a reference to the ordered list called 'markList'
+      // called 'oListMark'
+      var oListMark = document.getElementById('markList');
+      var entry = document.createElement('li'); // a list element to be added to the ordered list
+      entry.appendChild(document.createTextNode(mark));
+      oListMark.appendChild(entry);
+      
+      // AJ: we only need to send information to the console window when we
+      // are debugging our code of errors
+      // console.log (keys[i]);
+      // console.log (subject);
+
+    }
+}
+
+function errData(err){
+    console.log('Error!')
+    console.log(err)
+}
+</script>
+</html>
