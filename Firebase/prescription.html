@@ -92,9 +92,12 @@ nav {
 
     <center><p>Please enter the name of the medication</p></center> 
     <center><input type="text" id="name"></input></center>
-    <center><p>Please enter the number of tablets</p></center> 
+    <center><p>Please enter the number of tablets per day</p></center> 
     <center><input type="text" id ="dose"></center>
+    <center><p>Please enter the number of days the patient should follow this regiment</p></center> 
+    <center><input type="text" id ="quantity"></center>
     <center><p>Please enter when the patient should take it</p></center>
+
 
 <!--     <label class="form">
     <center><input type="radio" name="time" id="m" value="1" onclick="radio (this)"> Morning<br></center>
@@ -115,7 +118,7 @@ nav {
 
 
 
-    <center><button class="button" onclick="sendresults()">Send results</button></center>
+    <center><button class="button" onclick="sendresults()">Set Prescription</button></center>
     <p id="test"></p>
   </nav>
 
@@ -155,6 +158,7 @@ var userId = document.getElementById("uid").innerHTML;
     // Grab the Name, Subject, and Grade obtained from the HTML frontend textboxes
     var medication = document.getElementById("name").value;
     var dose = document.getElementById("dose").value;
+    var quantity = document.getElementById("quantity").value;
     var time = document.querySelector('.select').value;
     // var date = 
 
@@ -162,7 +166,8 @@ var userId = document.getElementById("uid").innerHTML;
     var data = {
       medication: medication,
       dosage: dose,
-      time: time
+      time: time,
+      quantity: quantity
     }
     // "PUSH" means we add something to the database
     console.log(data)

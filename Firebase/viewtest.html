@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- HERE ARE YOUR FIREBASE and GOOGLE AUTHENICATION IMPORTS -->
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-database.js"></script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+  <!-- Load plotly.js into the DOM -->
+  <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+
 <title>CSS Template</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -41,6 +52,11 @@ nav {
   background: #3285a8;
 }
 
+#graph {
+  width: 60%;
+  height: 380px;
+}
+
 /* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
 @media (max-width: 600px) {
   nav {
@@ -50,41 +66,136 @@ nav {
 }
 </style>
 </head>
-<body>
+<body onload="getData()">
 
 <header>
   <h2>View previous tests</h2>
 </header>
 
-<section>
-  <nav>
-    <center><p>Please select the test you would like to view</p></center>
-    <center><select class="select">
-      <option value="Blood sugar">Blood sugar</option>
-      <option value="Cholestrol">Cholestrol</option>
-      <option value="Blood pressure">Blood pressure</option>
-      <option value="ECG">ECG</option>
-    </select></center>
-    <center><img src="sugar.jpeg" height="300" width="420" id = "graph"></center>
-  </nav>
-  <script type="text/javascript">
+
+<nav>
+  <center><p>Please select the test you would like to view</p></center>
+  <center><select class="select">
+    <option value="Blood sugar">Blood sugar</option>
+    <option value="Cholestrol">Cholestrol</option>
+    <option value="Blood pressure">Blood pressure</option>
+    <option value="ECG">Heart rate</option>
+  </select></center>
+
+  <center><div id='graph'></div></center>
+  <button onclick="goBack()">Go Back</button>
+</nav>
+
+
+
+
+<script type="text/javascript">
+  var provider = new firebase.auth.GoogleAuthProvider();
+
+// Your web app's Firebase configuration that we copy-and-paste from 
+// the Firebase setup
+  var config = {
+
+    apiKey: "AIzaSyDjE-sz5wbwyQYLgiNb4zrEzlXoFokfB_8",
+    authDomain: "kimothy5.firebaseapp.com",
+    databaseURL: "https://kimothy5.firebaseio.com",
+    projectId: "kimothy5",
+    storageBucket: "kimothy5.appspot.com",
+    messagingSenderId: "1001806703876",
+    appId: "1:1001806703876:web:a9f507acc288807b6cb451",
+    measurementId: "G-EM2JTCGZH1"
+
+  };
+
+  firebase.initializeApp(config);
+
+  function getData() {
+
+    // Create a database object that we can refer to
+    var database = firebase.database();
+
+    // Create a reference to a particular location or "node"
+    // 'StudentInfo'is the name of the main branch in the database
+    var ref = database.ref('Blood sugar');
     const selectElement = document.querySelector('.select');
 
     selectElement.addEventListener('change', (event) => {
       if (selectElement.value == "Blood sugar") {
-        document.getElementById("graph").src="sugar.jpeg";
+        var ref = database.ref('Blood sugar');
+        ref.on('value', gotData, errData) 
       }
       else if (selectElement.value == "Cholestrol") {
-        document.getElementById("graph").src="Cholestrol.png";
-
+        var ref = database.ref('Cholestrol');
+        ref.on('value', gotData, errData) 
       }
       else if (selectElement.value == "Blood pressure") {
-        document.getElementById("graph").src="sugar.jpeg"
+        var ref = database.ref('Blood pressure');
+        ref.on('value', gotData, errData) 
       }
       else {
-        document.getElementById("graph").src="ECG.jpeg ";
-      }
+        var ref = database.ref('ECG');
+        ref.on('value', gotData, errData) 
+     }
     })
+
+    // we will make reference to each 'value' of a database object which will have 
+    // two helper functions latched "on" to it to perform additional tasks 
+    // - either we have access to data values, or we don't and there is an error
+
+    ref.on('value', gotData, errData) 
+    // jump to the helper function...think of 'value' as the parameter that is passed
+
+}
+
+  function gotData(data) { 
+  var test = data.val(); 
+  var keys = Object.keys(test);
+  var datar = [];
+  var datad = [];
+  // console.log(keys)
+
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    var date = test[k].date;
+    datad.push(date);
+    // console.log(date);
+
+    var results = test[k].result;
+    datar.push(results);
+    // console.log(results);
+  }
+    // console.log(datar);
+    // console.log(datad);
+  var trace = {
+    x: datad,
+    y: datar,
+    mode: 'lines+markers'
+  };
+  var data = [trace];
+
+  const selectElement = document.querySelector('.select');
+  var title = selectElement.value;
+
+  var layout = {
+    title: title,
+    xaxis: {
+      title: 'date of test'
+    },
+    yaxis: {
+      title: 'test results'
+    }
+  };
+  Plotly.newPlot('graph', data, layout);
+}
+
+function errData(err){
+  console.log('Error!')
+  console.log(err)
+}
+
+function goBack() {
+  window.history.back();
+}
   </script>
 </body>
 </html>

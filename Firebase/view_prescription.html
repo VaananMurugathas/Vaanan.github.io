@@ -97,16 +97,17 @@ nav {
 
 
 </head>
-<body onload ="gotData();">
+<body onload ="getData();">
 <header>
   <h2>View prescriptions</h2>
 </header>
 <nav>
-  <table style="width:100%">
+  <table style="width:100%", id ='table'>
     <tr>
-      <th>Firstname</th>
-      <th>Lastname</th> 
-      <th>Age</th>
+      <th>Name of medication</th>
+      <th>How many to take per day</th> 
+      <th>Number of days to take it for</th>
+      <th>Time of day</th>
     </tr>
   </table>
 </nav>
@@ -116,7 +117,6 @@ nav {
 // Variables created here to be used throughout the program
 
 var provider = new firebase.auth.GoogleAuthProvider();
-var userId = document.getElementById("uid").innerHTML;
 
 // Your web app's Firebase configuration that we copy-and-paste from 
 // the Firebase setup
@@ -136,56 +136,74 @@ var config = {
 firebase.initializeApp(config);
 //firebase.analytics();
 
+// credit to Mr. Jugoon's code here:
+function getData() {
 
+    // Create a database object that we can refer to
+    var database = firebase.database();
+
+    // Create a reference to a particular location or "node"
+    // 'StudentInfo'is the name of the main branch in the database
+    var ref = database.ref('Prescription');
+
+    // we will make reference to each 'value' of a database object which will have 
+    // two helper functions latched "on" to it to perform additional tasks 
+    // - either we have access to data values, or we don't and there is an error
+
+    ref.on('value', gotData, errData) 
+    // jump to the helper function...think of 'value' as the parameter that is passed
+
+}
+
+// watched a youtube video for the idea for the code here: https://www.youtube.com/watch?v=NcewaPfFR6Y
 function gotData(data){
+  var chart = document.querySelectorAll(".bruh");
+  for (var i = 0; i < chart.length; i++) {
+    chart[i].remove();
+  }
+  // console.log(data.val());
+  var prescription = data.val();
+  var keys = Object.keys(prescription);
+  // console.log(keys)
 
-    // clear items from previously created lists
-    document.getElementById("studentList").innerHTML = "";
-    document.getElementById("subjectList").innerHTML = "";
-    document.getElementById("markList").innerHTML = "";
-    
-    // collect all of the unique objects ('keys' or id's) out of the database
-    var studentData = data.val(); // access the data 'value' of each student 'object' 
-    var keys = Object.keys(studentData);
-    console.log(keys);
-
-    // iterate through the unique object id's and grab data fields: 'name', 'subject', 'mark'
-    for (var i = 0; i < keys.length; i++){
-      var k = keys[i];
-      var name = studentData[k].name;
-      var subject = studentData[k].subject;
-      var mark = studentData[k].mark;
-
-      // DISPLAY STUDENT NAMES
-      // Create a reference to the ordered list called 'studentList'
-      // called 'oListStudent'
-      var oListStudent = document.getElementById('studentList');
-      var entry = document.createElement('li'); // a list element to be added to the ordered list
-      entry.appendChild(document.createTextNode(name));
-      oListStudent.appendChild(entry);
-
-      // DISPLAY STUDENT SUBJECTS
-      // Create a reference to the ordered list called 'studentList'
-      // called 'oListStudent'
-      var oListSubject = document.getElementById('subjectList');
-      var entry = document.createElement('li'); // a list element to be added to the ordered list
-      entry.appendChild(document.createTextNode(subject));
-      oListSubject.appendChild(entry);
-
-      // DISPLAY STUDENT MARKS
-      // Create a reference to the ordered list called 'markList'
-      // called 'oListMark'
-      var oListMark = document.getElementById('markList');
-      var entry = document.createElement('li'); // a list element to be added to the ordered list
-      entry.appendChild(document.createTextNode(mark));
-      oListMark.appendChild(entry);
-      
-      // AJ: we only need to send information to the console window when we
-      // are debugging our code of errors
-      // console.log (keys[i]);
-      // console.log (subject);
-
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    var medication = prescription[k].medication;
+    var dosage = prescription[k].dosage;
+    var quantity = prescription[k].quantity;
+    var timeraw = prescription[k].time;
+    // if (timeraw == 2) {
+    //   console.log('working!')
+    if (timeraw == 1) {
+      var time = 'morning';
     }
+    else if (timeraw == 2) {
+      var time = 'noon';
+    }
+    if (timeraw == 3) {
+      var time = 'night';
+    }
+    // console.log(medication,dosage,quantity,time);
+    var tr = document.createElement('tr')
+    document.getElementById("table").appendChild(tr);
+    var th = document.createElement('th');
+    th.classList.add('bruh');
+    th.innerHTML = medication;
+    document.getElementById("table").appendChild(th);
+    var th2 = document.createElement('th');
+    th2.classList.add('bruh');
+    th2.innerHTML = dosage;
+    document.getElementById("table").appendChild(th2);
+    var th3 = document.createElement('th');
+    th3.classList.add('bruh');
+    th3.innerHTML = quantity;
+    document.getElementById("table").appendChild(th3);
+    var th4 = document.createElement('th');
+    th4.classList.add('bruh');
+    th4.innerHTML = time;
+    document.getElementById("table").appendChild(th4);
+
+  }
 }
 
 function errData(err){
